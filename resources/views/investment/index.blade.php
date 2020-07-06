@@ -22,14 +22,16 @@
 @foreach($investments as $investment)
   <tr>
     <td>
-	   {{$investment->company_name ?? 'Not found'}}
+		<a href="{{url('company/profile/' . $investment->company_id)}}">
+	   {{$investment->company_name ?? 'Not found'}} <i class="fas fa-info-circle"></i>
+	   </a>
     </td>
     <td>£{{ number_format($investment->value, 2, ',', '.') }}</td>
     <td>{{$investment->meta['classification']['share_class'] ?? '-'}}</td>
     <td>{{$investment->meta['info']['volume'] ?? '-'}}</td>
     <td>{{$investment->purchased_at ? $investment->purchased_at->format('d/m/Y') : '-'}}</td>
     <td>
-          <a href="{{ url('investments/'. $investment->id. '/edit') }}">
+          <a href="{{ url('investment/'. $investment->id. '/edit') }}">
             <i class="fas fa-edit text-primary"></i>
           </a>
     </td>

@@ -14,7 +14,7 @@
 
         <div class="col-sm-12">
             <div class="card">
-                <div class="card-header">{{ __('Search for company') }}</div>
+                <div class="card-header">{{ __('Search for UK company') }}</div>
 
                 <div class="card-body">
                     <form method="POST" action="{{route('company.search') }}">

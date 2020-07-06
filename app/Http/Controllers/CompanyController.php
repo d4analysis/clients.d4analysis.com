@@ -16,7 +16,20 @@ class CompanyController extends Controller
      */
     public function show($id)
     {
-		return view('investment.edit', ['investment' => Investment::findOrFail($id)]);
+		//prepend a zero if the ID is <8 chars
+		$companyId = sprintf("%08d", $id);
+		
+		$company = CompaniesHouse::company($companyId)->get();
+		$offices = CompaniesHouse::company($companyId)->registered_office_address();
+		$directors = CompaniesHouse::company($companyId)->officers();
+		$history = CompaniesHouse::filingHistory($companyId)->all();
+		
+		$company->json = json_encode($company,true);
+		$company->offices = json_encode($offices,true);
+		$company->directors = json_encode($directors,true);
+		$company->history = $history->items;
+		
+		return view('company.profile',['company'=>$company]);
 
     }
 

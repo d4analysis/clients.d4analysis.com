@@ -11,9 +11,8 @@
                 @include('investment.index')
 
 				<br/>
-				<a href="{{url('companies/search')}}" class="btn btn-warning">Add company investment</a>
+				<a href="{{ url('investments/add') }}" class="btn btn-warning">Add investment&nbsp;&nbsp;<i class="fas fa-plus"></i></a>
 				
-				<a href="{{url('funds/search')}}" class="btn btn-info">Add fund investment</a>
             </div>
         </div>
 @endsection
