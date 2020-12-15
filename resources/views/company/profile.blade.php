@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+<div class="container-fluid">
     <div class="row justify-content-center">
         <div class="col-sm-12">
              @if (session('status'))
@@ -9,30 +9,29 @@
                    {{ session('status') }}
                   </div>
              @endif
-			 <h3>Company profile</h3>
-			 <br/>
-			 <h5>{{ $company->company_name }}</h5>
-			 
-			 <p>Founded: {{ $company->date_of_creation }}</p>
-			 <p>... and the rest as json</p>
-			 
-			 {{$company->json}}
-			 
-			 <br/><br/>
-			 <h4>Offices</h4>
-			  {{$company->offices}}
-			  
-			  <br/><br/>
-			  <h4>Directors</h4>
-			  {{$company->directors}}
-			  
-			  <br/><br/>
-			  <h4>Filing history</h4>
-			  @foreach ($company->history as $file)
-			  {{$file->date}}: {{$file->description}}<br/>
-			  @endforeach
-		</div>
+        </div>
+        <div class="col-sm-12">
+          <div class="card">
+              <div class="card-header">{{ __('Edit investigation') }}</div>
+
+              <div class="card-body">
+            			 <h3>{{ $company->company_name }}</h3>
+            			 <br/>
+            			 <h5>Directors</h5>
+                    @foreach ($company->directors as $director)
+                      @if(!isset($director->resigned_on))
+                        {{$director->name}}
+                      @endif
+                    <br/>
+            			  @endforeach
+                    <a href="{{url('/')}}" type="button" class="btn btn-light">
+                      Close
+                    </a>
+                  </div>
+                </div>
+
+            </div>
+        </div>
 	</div>
-</div>
 
 @endsection

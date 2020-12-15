@@ -13,36 +13,36 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'HomeController@index')->name('home')->middleware('auth');;
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/about', 'AboutController@index')->name('about');
 
 Route::get('/users','UserController@index')->middleware('auth');
 Route::get('/users/{id}','UserController@show')->middleware('auth');
 
-//Route::resource('investments', 'InvestmentController');
+//Route::resource('investigations', 'investigationController');
 
-Route::get('/investments','InvestmentController@index')->middleware('auth');
-Route::post('/investments','InvestmentController@store')->middleware('auth')->name('investment.store');
+Route::get('/investigations','InvestigationController@index')->middleware('auth');
+Route::post('/investigations','InvestigationController@store')->middleware('auth')->name('investigation.store');
 
-Route::get('/investments/add',function() {
-    return view('investment.new');
+Route::get('/investigations/add',function() {
+    return view('investigation.new');
 })->middleware('auth');
 
-Route::get('/investment/add/single/{company_number}/{title}','InvestmentController@create')->middleware('auth');
+Route::get('/investigation/add/single/{company_number}/{title}','InvestigationController@create')->middleware('auth');
 
-Route::get('/investment/{id}/edit','InvestmentController@edit')->middleware('auth');
-Route::put('/investment/{id}','InvestmentController@update')->middleware('auth')->name('investment.update');
-Route::delete('/investment/{id}','InvestmentController@destroy')->middleware('auth')->name('investment.destroy');
+Route::get('/investigation/{id}/edit','InvestigationController@edit')->middleware('auth');
+Route::put('/investigation/{id}','InvestigationController@update')->middleware('auth')->name('investigation.update');
+Route::delete('/investigation/{id}','InvestigationController@destroy')->middleware('auth')->name('investigation.destroy');
 
 Route::get('/companies','CompanyController@index')->middleware('auth');
-Route::get('/companies/search', function() {
+
+Route::get('/companies/search', 'CompanyController@search', function() {
     return view('company.search');
 })->middleware('auth')->name('company.search');
+
 Route::post('/companies/search','CompanyController@search')->middleware('auth');
 
 Route::get('/company/profile/{id}','CompanyController@show')->middleware('auth');
 
-Auth::routes();
+Auth::routes(['register' => false]);

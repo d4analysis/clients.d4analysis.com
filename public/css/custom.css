@@ -5,3 +5,16 @@
 .pacifico {
 	font-family: 'Pacifico', cursive;
 }
+
+h1 {
+	color:#fff;
+	font-weight:700;
+}
+
+h6 {
+	font-weight:700;
+}
+
+a.nav-link  {
+	font-weight:600;
+}

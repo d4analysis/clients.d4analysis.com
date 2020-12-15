@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Investigation;
 
 class HomeController extends Controller
 {
@@ -23,6 +24,15 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $Investigations = Investigation::where('user_id',auth()->user()->id)
+          ->orderBy('created_at','desc')
+          ->paginate(10);
+
+          $Companies = Investigation::where('user_id',auth()->user()->id)
+            ->orderBy('created_at','desc')
+            ->paginate(10)
+            ->unique('company_id');
+
+       return view('home', ['investigations' => $Investigations,'companies' => $Companies]);
     }
 }

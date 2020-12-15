@@ -4,67 +4,72 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Company;
+use App\Investigation;
 use GhazanfarMir\CompaniesHouse\Facades\CompaniesHouse;
 
 class CompanyController extends Controller
 {
      /**
-     * Show the profile for the given investment.
+     * Show the profile for the given investigation.
      *
      * @param  int  $id
      * @return View
      */
     public function show($id)
     {
-		//prepend a zero if the ID is <8 chars
-		$companyId = sprintf("%08d", $id);
-		
-		$company = CompaniesHouse::company($companyId)->get();
-		$offices = CompaniesHouse::company($companyId)->registered_office_address();
-		$directors = CompaniesHouse::company($companyId)->officers();
-		$history = CompaniesHouse::filingHistory($companyId)->all();
-		
-		$company->json = json_encode($company,true);
-		$company->offices = json_encode($offices,true);
-		$company->directors = json_encode($directors,true);
-		$company->history = $history->items;
-		
-		return view('company.profile',['company'=>$company]);
+    		//prepend a zero if the ID is <8 chars
+    		$companyId = sprintf("%08d", $id);
+
+    		$company = CompaniesHouse::company($companyId)->get();
+    		$offices = CompaniesHouse::company($companyId)->registered_office_address();
+    		$directors = CompaniesHouse::company($companyId)->officers();
+    		$history = CompaniesHouse::filingHistory($companyId)->all();
+
+    		$company->json = json_encode($company,true);
+    		$company->offices = json_encode($offices,true);
+
+    		$company->directors = $directors->items;
+    		$company->history = $history->items;
+
+    		return view('company.profile',['company'=>$company]);
 
     }
 
     public function index()
     {
-        $investments = Investment::with('user')
-          ->orderBy('created_at','desc')
-          ->paginate(10);
 
-		   return view('investments', ['investments' => $investments]);
+      $companies = Investigation::where('user_id',auth()->user()->id)
+        ->orderBy('created_at','desc')
+        ->paginate(10)
+        ->unique('company_id');
+
+		   return view('companies', ['companies' => $companies]);
     }
 
 	public function edit($id)
     {
-        $investment = Investment::find($id);
-        return view('investment.edit', compact('investment'));
+        $investigation = Investigation::find($id);
+        return view('investigation.edit', compact('investigation'));
     }
 
 
     public function create()
     {
-        return view('investment.create');
+
+      return view('investigation.create');
     }
 
     public function update(Request $request,$id)
     {
-        $investment = Investment::find($id);
+        $investigation = Investigation::find($id);
 
-    	   $investment->value = $request->value;
+    	   $investigation->value = $request->value;
 
-        $investment->save();
+        $investigation->save();
 
         return redirect()->action(
-    			'InvestmentController@index'
-    		)->with('success', 'Investment updated!');
+    			'InvestigationController@index'
+    		)->with('success', 'Investigation updated!');
 
     }
 
@@ -74,18 +79,18 @@ class CompanyController extends Controller
      */
     public function store(Request $request)
     {
-		$investment = new Investment;
+		$investigation = new Investigation;
 
 		$user = auth()->user();
 
-        $investment->user_id = $user->id;
-    	$investment->value = $request->value;
+        $investigation->user_id = $user->id;
+    	$investigation->value = $request->value;
 
-        $investment->save();
+        $investigation->save();
 
 		return redirect()->action(
-			'InvestmentController@index'
-		)->with('success', 'Investment added!');
+			'InvestigationController@index'
+		)->with('success', 'Investigation added!');
     }
 
     /**
@@ -94,18 +99,27 @@ class CompanyController extends Controller
      */
     public function destroy(Request $request,$id)
     {
-        $investment = Investment::findOrFail($id);
-        $investment->delete();
+        $investigation = Investigation::findOrFail($id);
+        $investigation->delete();
 
 		return redirect()->action(
-			'InvestmentController@index'
-		)->with('success', 'Investment deleted!');
+			'InvestigationController@index'
+		)->with('success', 'Investigation deleted!');
     }
 
     public function search(Request $request)
     {
-        $companies = CompaniesHouse::search()->companies($request->search);
 
-        return view('company.search',['companies'=>$companies->items]);
+        if ($request->search) {
+          $companies = CompaniesHouse::search()->companies($request->search);
+          return view('company.search',['company_search'=>$companies->items]);
+        }
+
+        $companies_list = Investigation::where('user_id',auth()->user()->id)
+          ->orderBy('created_at','desc')
+          ->paginate(10)
+          ->unique('company_id');
+
+        return view('company.search',['companies'=>$companies_list]);
     }
 }
